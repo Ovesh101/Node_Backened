@@ -103,15 +103,16 @@ export const checkout = async (req, res) => {
 
     if (existingCart) {
       // Check each cartItem to avoid duplicates
-      cartItems.forEach(newItem => {
-        const isItemExist = existingCart.items.some(item => item.productId === newItem.productId);
+      // cartItems.forEach(newItem => {
+      //   const isItemExist = existingCart.items.some(item => item.productId === newItem.productId);
 
-        console.log("Item Exisist" , isItemExist);
+      //   console.log("Item Exisist" , isItemExist);
 
-        if (!isItemExist) {
-          existingCart.items.push(newItem);
-        }
-      });
+      //   if (!isItemExist) {
+      //     existingCart.items.push(newItem);
+      //   }
+      // });
+      existingCart.items = cartItems;
 
       await existingCart.save();
     } else {
