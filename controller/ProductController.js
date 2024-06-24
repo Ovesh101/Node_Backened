@@ -96,18 +96,37 @@ export const deleteFromCart = async (req, res) => {
 export const checkout = async (req, res) => {
   try {
     const { cartItems } = req.body;
-    const {userId} = req.user
+    const { userId } = req.user;
 
-    const newCart = new Cart({
-      userId,
-      items: cartItems,
-    });
+    // Find existing cart for the user
+    let existingCart = await Cart.findOne({ userId });
 
-    await newCart.save();
+    if (existingCart) {
+      // Check each cartItem to avoid duplicates
+      cartItems.forEach(newItem => {
+        const isItemExist = existingCart.items.some(item => item.productId === newItem.productId);
 
-    res.status(201).json({ message: 'Cart saved successfully', cart: newCart });
+        console.log("Item Exisist" , isItemExist);
+
+        if (!isItemExist) {
+          existingCart.items.push(newItem);
+        }
+      });
+
+      await existingCart.save();
+    } else {
+      // Create new cart if no existing cart found
+      const newCart = new Cart({
+        userId,
+        items: cartItems,
+      });
+      await newCart.save();
+      existingCart = newCart; // Set existingCart to newCart for response
+    }
+
+    res.status(201).json({ message: 'Cart updated successfully', cart: existingCart });
   } catch (error) {
-    console.error('Error saving cart:', error);
+    console.error('Error saving/updating cart:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
