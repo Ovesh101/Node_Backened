@@ -153,16 +153,11 @@ export const paymentGateway = async (req, res) => {
     });
     await payment.save();
 
-    const cart = await Cart.findOne({ _id: id });
-    
-    if (cart) {
-      // Set the userId to null
-      cart.userId = null;
-      await cart.save();
-      console.log('User ID removed from cart successfully.');
-    } else {
-      console.log('Cart not found.');
+    const deletedCart = await Cart.findOneAndDelete({ _id: id });
+    if (!deletedCart) {
+      return res.status(404).json({ message: 'Cart not found' });
     }
+  
 
     const user = await User.findOne({_id:userId});
     if(user){
@@ -175,6 +170,8 @@ export const paymentGateway = async (req, res) => {
     res.status(400).send({ message: 'Failed to save payment information', error });
   }
 };
+
+
 
 
 
