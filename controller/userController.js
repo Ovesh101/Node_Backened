@@ -31,6 +31,16 @@ const login = async (req, res) => {
         const isPasswordCorrect = await comparePassword(req.body.password , user.password);
         if (!isPasswordCorrect) throw new Error('Invalid password..');
         const token  = createJWT({userId : user._id })
+
+
+           // Set the token in a cookie
+        res.cookie('token', token, {
+        httpOnly: true, // Makes the cookie inaccessible to JavaScript on the client side
+        maxAge: 3600000   // 1 hour in milliseconds
+      });
+
+
+
         res.status(200).json({msg : "Login Successfully " , userInfo:user , token : token})
         
     } catch (error) {
@@ -51,6 +61,13 @@ const login = async (req, res) => {
 
   
 };
+
+export const logout = (req , res)=>{
+    res.clearCookie('token');
+    res.json({ message: 'Logout successful' });
+
+
+}
 
 
 

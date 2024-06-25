@@ -1,6 +1,8 @@
 import express  from 'express';
 import mongoose from 'mongoose';
 import UserRoute from "./routes/UserRoute.js"
+
+import cookieParser from 'cookie-parser';
 import dotenv from "dotenv"
 
 import ProductRoute from "./routes/ProductRoute.js"
@@ -9,8 +11,12 @@ dotenv.config()
 import cors from "cors"
 
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true  // Allows cookies to be sent and received
+  }));
 
 
 //  2nd method for implementing cors manually

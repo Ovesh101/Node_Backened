@@ -4,7 +4,9 @@ import { verifyJWT } from "../utils/tokenUtils.js"
 
 export const authenticateUser  = (req , res , next)=>{
     console.log("hello");
-    const token = req.headers.authorization && req.headers.authorization.split(' ')[1]; // Extract token from Authorization header
+   const token = req.cookies.token;
+   console.log("Token"  ,token);
+   
 
     console.log("token" , token);
    
