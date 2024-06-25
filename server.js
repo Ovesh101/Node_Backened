@@ -1,3 +1,4 @@
+import 'express-async-errors';
 import express  from 'express';
 import mongoose from 'mongoose';
 import UserRoute from "./routes/UserRoute.js"
@@ -9,6 +10,7 @@ import ProductRoute from "./routes/ProductRoute.js"
 dotenv.config()
 
 import cors from "cors"
+import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
 
 const app = express();
 app.use(cookieParser());
@@ -33,6 +35,8 @@ app.get( '/', ( req, res ) => {
 app.use("/api/v1" , ProductRoute )
 app.use("/api/v1" , UserRoute)
 
+
+app.use(errorHandlerMiddleware);
 
 
 mongoose.connect(process.env.MONGO_URI)

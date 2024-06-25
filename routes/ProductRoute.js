@@ -3,6 +3,7 @@ import express from "express"
 const router = express.Router()
 import { getAllProducts , getProductById , updateUserCart , getUserProfile , deleteFromCart , paymentGateway, checkout } from "../controller/ProductController.js"
 import { authenticateUser } from "../middleware/authMiddleware.js"
+import { validatePaymentForm } from "../middleware/validationMiddleware.js"
 
 
 
@@ -14,7 +15,7 @@ router.get('/me', authenticateUser, getUserProfile);
 router.delete('/:productId', authenticateUser , deleteFromCart);
 
 router.post('/checkout',authenticateUser , checkout);
-router.post('/payment/:id',authenticateUser , paymentGateway);
+router.post('/payment/:id',authenticateUser , validatePaymentForm ,  paymentGateway);
 
 
 export default router

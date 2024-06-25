@@ -24,6 +24,8 @@ const login = async (req, res) => {
   
   // check if password is correct
     try {
+
+        console.log("");
         const user = await User.findOne({ email: req.body.email });
         if (!user) throw new Error('User is not registered');
         console.log("user" , user);
