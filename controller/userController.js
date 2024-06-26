@@ -1,10 +1,6 @@
 
 import User from "../models/UserModel.js"
 import { createJWT  } from "../utils/tokenUtils.js";
-
-
-// import { createJWT } from "../utils/tokenUtils.js";
-
 import { hashPassword  , comparePassword} from "../utils/passwordUtils.js"
 
 const register = async (req , res)=>{
@@ -40,6 +36,11 @@ const login = async (req, res) => {
         httpOnly: true, // Makes the cookie inaccessible to JavaScript on the client side
         maxAge: 3600000   // 1 hour in milliseconds
       });
+      res.cookie('username', user.name, {
+        httpOnly: true, // Makes the cookie inaccessible to JavaScript on the client side
+        maxAge: 3600000   // 1 hour in milliseconds
+      });
+
 
 
 
@@ -66,6 +67,9 @@ const login = async (req, res) => {
 
 export const logout = (req , res)=>{
     res.clearCookie('token');
+    
+    
+    console.log(`-------> User Logged out`)
     res.json({ message: 'Logout successful' });
 
 

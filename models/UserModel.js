@@ -19,11 +19,17 @@ const UserSchema = new Schema({
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+     
       minlength: [6, 'Password must be at least 6 characters long'],
+      required: [function() { return !this.googleId; }, 'Password is required'],
       
     },
-    cartItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }]
+    cartItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }],
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true
+  }
 
   });
 
