@@ -27,6 +27,9 @@ app.use("/api/v1", ProductRoute);
 app.use("/api/v1", UserRoute);
 app.use("",authRouter);
 
+// This line of code is used for disbling the SSL Certificate chain
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 app.use(errorHandlerMiddleware);
 
 mongoose

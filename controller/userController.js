@@ -1,9 +1,12 @@
 
 import User from "../models/UserModel.js"
 import { createJWT  } from "../utils/tokenUtils.js";
+import crypto from "crypto"
 import { hashPassword  , comparePassword} from "../utils/passwordUtils.js"
+import { sendEmail } from "../utils/sendEmail.js";
+import { NotFoundError } from "../error/customError.js";
 
-const register = async (req , res)=>{
+export const register = async (req , res)=>{
 
    
     req.body.password = await hashPassword(req.body.password);
@@ -15,7 +18,7 @@ const register = async (req , res)=>{
 
 
 
-const login = async (req, res) => {
+export const login = async (req, res) => {
   // check if user exists
   
   // check if password is correct
@@ -75,6 +78,57 @@ export const logout = (req , res)=>{
 
 }
 
+export const forgetPassword = async (req , res)=>{
+    const {email} = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken =  crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+    await user.save();
+    const resetURL = `http://localhost:3000/resetPassword/${resetToken}`;
+
+    const message = `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+    Please click on the following link, or paste this into your browser to complete the process:\n\n
+    ${resetURL}\n\n
+    If you did not request this, please ignore this email and your password will remain unchanged.\n`;
 
 
-export {register , login}
+    await sendEmail(user.email , "Password reset Token" , message)
+
+    res.status(200).json({
+        success:true,
+        resetToken:resetToken,
+        message:`Reset Token has been sent ${user.email}`
+    })
+
+}
+export const resetPassword = async (req , res)=>{
+    const {resetToken} = req.params;
+    const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpires:{
+            $gt:Date.now()
+        }
+    })
+
+    if(!user)throw new NotFoundError("Token is invalid or has been expired")
+
+        req.body.password = await hashPassword(req.body.password);
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+    await user.save();
+    res.status(200).json({
+        success:true,
+        password:user.password,
+        message:`Reset Token has been sent`,
+        resetToken
+    })
+}
+
+
+

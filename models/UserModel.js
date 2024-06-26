@@ -29,7 +29,9 @@ const UserSchema = new Schema({
       type: String,
       unique: true,
       sparse: true
-  }
+  },
+  resetPasswordToken:String,
+  resetPasswordExpires:String
 
   });
 
