@@ -80,6 +80,7 @@ export const logout = (req , res)=>{
 
 export const forgetPassword = async (req , res)=>{
     const {email} = req.body;
+    console.log(req.body);
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -97,6 +98,8 @@ export const forgetPassword = async (req , res)=>{
 
 
     await sendEmail(user.email , "Password reset Token" , message)
+
+    console.log("before response");
 
     res.status(200).json({
         success:true,
@@ -116,6 +119,7 @@ export const resetPassword = async (req , res)=>{
     })
 
     if(!user)throw new NotFoundError("Token is invalid or has been expired")
+        console.log("changed"  ,req.body.password);
 
         req.body.password = await hashPassword(req.body.password);
         user.password = req.body.password;
@@ -124,7 +128,7 @@ export const resetPassword = async (req , res)=>{
     await user.save();
     res.status(200).json({
         success:true,
-        password:user.password,
+        password:user.password, // Hash password using 
         message:`Reset Token has been sent`,
         resetToken
     })

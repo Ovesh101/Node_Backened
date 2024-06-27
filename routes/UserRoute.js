@@ -9,7 +9,7 @@ import { validateLoginInput, validateRegisterInput } from "../middleware/validat
 router.route("/register").post( validateRegisterInput ,  register)
 router.route("/login").post( validateLoginInput , login)
 router.route("/logout").post( logout)
-router.route("/forgetPassword").post(forgetPassword)
+router.route("/forgetPassword").post( forgetPassword)
 router.route("/resetPassword/:resetToken").put(resetPassword)
 
 
